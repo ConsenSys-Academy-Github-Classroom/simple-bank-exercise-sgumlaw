@@ -12,11 +12,19 @@ const { catchRevert } = require("./exceptionsHelpers.js");
 var SimpleBank = artifacts.require("./SimpleBank.sol");
 
 contract("SimpleBank", function (accounts) {
+  //console.log("Accounts Before", accounts);
   const [contractOwner, alice] = accounts;
   const deposit = web3.utils.toBN(2);
+  //console.log("Deposit", web3.utils.toWei(deposit, "Wei").toString());
+  //console.log("Accounts After", accounts);
+  //console.log("Alice", alice);
+  //console.log("contractOwner", contractOwner);
 
   beforeEach(async () => {
     instance = await SimpleBank.new();
+    //balance = await web3.utils.fromWei(instance.getBalance.call());
+    
+    //console.log("Message Sender Balance: ", balance)
   });
 
   it("ready to be solved!", async() => {
@@ -59,13 +67,23 @@ contract("SimpleBank", function (accounts) {
   });
 
   it("should deposit correct amount", async () => {
+    //const bbalance = await instance.getBalance.call({ from: alice });
+    //const bbalance2 = await instance.getBalance.call({ from: contractOwner });
+    //console.log("Alice Before Balance:", web3.utils.toWei(bbalance, "Wei").toString());
+    //console.log("Contract Owner Before Balance:", web3.utils.toWei(bbalance2, "Wei").toString());
     await instance.enroll({ from: alice });
     await instance.deposit({ from: alice, value: deposit });
+    //console.log("Alice:", alice);
     const balance = await instance.getBalance.call({ from: alice });
+    //const balance2 = await instance.getBalance.call({ from: contractOwner });
+    //console.log("Alice Balance:", balance.toString());
+    
+    //console.log("Alice BN Balance:", web3.utils.toBN(balance).toString());
+    //console.log("Contract Owner Balance:", web3.utils.toWei(balance2, "Wei").toString());
 
     assert.equal(
       deposit.toString(),
-      balance,
+      balance.toString(),
       "deposit amount incorrect, check deposit method",
     );
   });
@@ -78,7 +96,7 @@ contract("SimpleBank", function (accounts) {
 
     const logAccountAddress = result.logs[0].args.accountAddress;
     const logDepositAmount = result.logs[0].args.amount.toNumber();
-
+    console.log("Log Deposit: ", logDepositAmount)
     assert.equal(
       expectedEventResult.accountAddress,
       logAccountAddress,
